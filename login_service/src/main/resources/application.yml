@@ -1,9 +1,12 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/demo_db
-    username: rajneesh
-    password: Rajneesh2024
-    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://localhost:5432/demo_db
+#    username: rajneesh
+#    password: Rajneesh2024
+     url: jdbc:postgresql://dpg-ctg0k8i3esus73avrio0-a.oregon-postgres.render.com/auth_db_pt9f
+     username: skillshare_admin
+     password: ycUJtMk2h1iluT6BJsBVZ9RenNmheKH9
+     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       naming:
@@ -26,7 +29,7 @@ spring:
     password: nlbx jler jtfl ubqy
     properties:
       mail:
-        debug: true
+        debug: false
         smtp:
           auth: true
           starttls:
