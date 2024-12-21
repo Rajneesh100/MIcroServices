@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
+
 @RestController
 public class AuthController {
 
@@ -30,11 +33,7 @@ public class AuthController {
     ){
         String response ="";
         if(!dto.with_otp()){
-
-
             return emailService.sendOtpToEmail(dto.email());
-
-
         }else
         {
             boolean success = emailService.validateOtp(dto.email(), dto.otp());
@@ -44,27 +43,27 @@ public class AuthController {
                 if(dto.is_new())
                 {
                    Pair<Users, String> p = userService.saveNewUser(dto);
-                    System.out.println(p.getFirst().getId()+" "+  p.getFirst().getEmail()+" " +  p.getFirst().getLast_login() +" "+p.getSecond());
-                    if(p.getSecond().equals("Success")) {
+                   System.out.println(p.getFirst().getId()+" "+  p.getFirst().getEmail()+" " +  p.getFirst().getLast_login() +" "+p.getSecond());
+                   if(p.getSecond().equals("Success")) {
                         System.out.println("hi\n");
-                        String tem= jwtService.generateToken(p.getFirst().getId(), p.getFirst().getEmail(), p.getFirst().getLast_login());
-                        System.out.println(tem);
-                       System.out.println("Registered Successful !! Welcome to skillshare :)  , Jwt token :" + jwtService.generateToken(p.getFirst().getId(), p.getFirst().getEmail(), p.getFirst().getLast_login()));
-                       return "Registered Successful !! Welcome to skillshare :)  , Jwt token :" + jwtService.generateToken(p.getFirst().getId(), p.getFirst().getEmail(), p.getFirst().getLast_login());
+                        String tem= jwtService.generateToken(p.getFirst().getId(), p.getFirst().getEmail(), p.getFirst().getLast_login(),p.getFirst().getPublicKey());
+                       System.out.println("Registered Successful !! Welcome to skillshare :)  , Jwt token :" + tem);
+                       return "Registered Successful !! Welcome to skillshare :)  , \nJwt token :" + tem + "\npublicKey :" + p.getFirst().getPublicKey();
                    }else
                    {
                        return p.getSecond();
                    }
                 }else
                 {
+
+                    LocalDateTime lastlogin= userService.GetLastLogin(dto.email());
                     // without registered user even after otp validation throw error
-                    Users user= userService.GetAndUpdateLastLogIn(dto.email());
+                    Users user= userService.UpdateLastLogIn(dto.email());
                     if(user==null) return "user not found :( first register";
-
+                    String token= jwtService.generateToken(user.getId(),user.getEmail(),user.getLast_login(),user.getPublicKey());
                     // else update last login time this will help in versioning tokens
-                    System.out.println("Welcome back ,Last Log in :"+ user.getLast_login() +". New jwt token : "+ jwtService.generateToken(user.getId(),user.getEmail(),user.getLast_login()));
-                    return "Welcome back ,Last Log in :"+ user.getLast_login() +". New jwt token : "+ jwtService.generateToken(user.getId(),user.getEmail(),user.getLast_login());
-
+                    System.out.println("Welcome back ,Last Log in :"+ lastlogin +". \nNew jwt token : "+ token + "\n your publicKey :" +user.getPublicKey());
+                    return "Welcome back ,Last Log in :"+lastlogin +". \nNew jwt token : "+ token +"\n your publicKey :" +user.getPublicKey();
                 }
 
             }
@@ -75,14 +74,6 @@ public class AuthController {
         }
     }
 
-//    @PostMapping("/easyAuth")
-//    public Pair< Boolean,String> validate(
-//        @Valid  @RequestBody JwtDto token
-//    ){
-//       boolean isvalid = this.jwtService.validateToken(token.jwtToken());
-//       if(isvalid) return Pair.of(true,token.jwtToken());
-//       else return Pair.of(false,"");
-//    }
 
 
     @PostMapping("/easyAuth")
@@ -107,6 +98,38 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Pair.of(false, ""));
         }
     }
+
+
+
+    @PostMapping("/Searchuser")
+    public ResponseEntity<Pair<Boolean, String>> searchAndValidate(
+            @Valid @RequestBody SeedServerRequestDto dto
+    ) {
+        // Check if the Authorization header exists and starts with "Bearer "
+        if (dto.email() == null || dto.publicKey()==null) {
+            return ResponseEntity.badRequest().body(Pair.of(false, "Invalid email or publickey"));
+        }
+        Users user= userService.UpdateLastLogIn(dto.email());
+
+        if(user==null)
+        {
+            return ResponseEntity.badRequest().body(Pair.of(false, "user not found please first register"));
+        }
+        if(Objects.equals(user.getPublicKey(), dto.publicKey())) {
+            return ResponseEntity.status(200).body(Pair.of(true, "user found"));
+        }else
+        {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Pair.of(false , "Mismatch public key"));
+        }
+
+
+    }
+
+
+
+
+
+
 
 
 }

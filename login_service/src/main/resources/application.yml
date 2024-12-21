@@ -4,8 +4,8 @@ spring:
 #    username: rajneesh
 #    password: Rajneesh2024
 #    postgresql://skillshare_admin:ycUJtMk2h1iluT6BJsBVZ9RenNmheKH9@dpg-ctg0k8i3esus73avrio0-a/auth_db_pt9f
-#     url: jdbc:postgresql://dpg-ctg0k8i3esus73avrio0-a.oregon-postgres.render.com/auth_db_pt9f # external url
-     url: jdbc:postgresql://dpg-ctg0k8i3esus73avrio0-a/auth_db_pt9f # internal url
+     url: jdbc:postgresql://dpg-ctg0k8i3esus73avrio0-a.oregon-postgres.render.com/auth_db_pt9f # external url
+#     url: jdbc:postgresql://dpg-ctg0k8i3esus73avrio0-a/auth_db_pt9f # internal url
      username: skillshare_admin
      password: ycUJtMk2h1iluT6BJsBVZ9RenNmheKH9
      driver-class-name: org.postgresql.Driver
@@ -13,8 +13,8 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-#      ddl-auto: create-drop
-      ddl-auto: update
+      ddl-auto: create-drop
+#      ddl-auto: update
     show-sql: true
     properties:
       hibernate:

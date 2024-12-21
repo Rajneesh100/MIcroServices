@@ -43,7 +43,16 @@ public class UserService {
         }
     }
 
-    public Users GetAndUpdateLastLogIn(String email)
+    public LocalDateTime GetLastLogin(String email)
+    {
+        Users user= this.userRepository.findByEmail(email);
+        if(user==null)
+        {
+            return null;
+        }
+        return user.getLast_login();
+    }
+    public Users UpdateLastLogIn(String email)
     {
         Users user= this.userRepository.findByEmail(email);
         if(user==null)

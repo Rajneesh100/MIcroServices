@@ -21,6 +21,13 @@ public class Users {
     @NotNull(message = "Email cannot be null")
     private String email;
 
+//    @Column(unique = true)
+//    @Email(message = "Invalid email address")
+//    @NotNull(message = "Email cannot be null")
+//    @Lob
+//    @Basic(fetch = FetchType.LAZY)
+    private String publicKey;
+
     private LocalDateTime created_date;
 
     private LocalDateTime last_login;
@@ -56,6 +63,14 @@ public class Users {
 
     public Users(String email) {
         this.email = email;
+    }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
     }
 
     public Users() {}

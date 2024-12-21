@@ -29,13 +29,14 @@ public class JwtService {
 
 
     // Generate JWT Token
-    public static String generateToken(Long userId, String email, LocalDateTime timestamp) {
+    public static String generateToken(Long userId, String email, LocalDateTime timestamp,String publicKey) {
         LocalDateTime truncatedTimestamp = timestamp.truncatedTo(ChronoUnit.SECONDS);
 
         return Jwts.builder()
                 .setSubject("User Authentication") // Token purpose
                 .claim("id", userId)               // Add user ID to claims
                 .claim("email", email)             // Add email to claims
+                .claim("publicKey", publicKey)             // Add email to claims
                 .claim("timestamp",truncatedTimestamp.toString())
                 .setIssuedAt(new Date())           // Issue date
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Expiry
@@ -50,6 +51,7 @@ public class JwtService {
             Long UserId =getUserIdFromToken(token);
             String UserEmail = getEmailFromToken(token);
             String timestamp = getTimeStampFromToken(token);
+            String publicKey= getPublicKeyFromToken(token);
             return this.userService.isLastAuthStampEqual(UserId, timestamp);  // compares the version of tokens
         } catch (JwtException ex) {
             // Handle invalid token scenarios (expired, tampered, etc.)
@@ -76,7 +78,7 @@ public class JwtService {
     public static String getEmailFromToken(String token) {
         return getClaims(token).get("email", String.class);
     }
-
+    public static String getPublicKeyFromToken(String token) {return getClaims(token).get("publicKey",String.class);}
     public static String getTimeStampFromToken(String token) {return getClaims(token).get("timestamp", String.class);}
 
 }
