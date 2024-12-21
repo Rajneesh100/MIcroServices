@@ -72,8 +72,8 @@ public class EmailService {
     }
     public boolean saytrue(){return true;}
     public boolean validateOtp(String email, String inputOtp) {
-        boolean okey= saytrue();
-        if(okey) return true;
+//        boolean okey= saytrue();
+//        if(okey) return true;
         OtpData otpData = otpStorage.get(email);
         if (otpData == null) {
             return false; // No OTP found for the email
